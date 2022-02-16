@@ -45,11 +45,11 @@ unsigned char spi_slave_transceive(unsigned char data) {
 // TODO: Condense with write_rows()
 void write_analogs(char row_locn, char pix_brightness) {
     if ((row_locn & 1) || row_locn & (1 << 1)) {
-        OC0A = pix_brightness;  // ALOG_12
+        analogWrite(ALOG_12, pix_brightness);
     } else if (row_locn & (1 << 2)) {
-        OC0B = pix_brightness;  // ALOG_3
-    } else if (row_locn & (1 << 3) || (row_locn & (1 << 4)) {
-        OC2B = pix_brightness;  // ALOG_45
+        analogWrite(ALOG_3, pix_brightness);
+    } else if ((row_locn & (1 << 3)) || (row_locn & (1 << 4))) {
+        analogWrite(ALOG_45, pix_brightness);
     }
 }
 
