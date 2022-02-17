@@ -31,7 +31,8 @@
 
 #define WAIT_TIME_10MS  10
 
-volatile char received_pixel, pixel_brightness;
+volatile char received_pixel;
+int pixel_brightness;
 int max_dimming, scaled_max;
 
 unsigned char spi_slave_transceive(unsigned char data) {
@@ -146,7 +147,8 @@ void loop(void) {
     received_pixel = spi_slave_transceive(ACK);
     
     // Get pixel brightness -- 0 is off, 255 is max dimming
-    pixel_brightness = spi_slave_transceive(ACK);
+    //pixel_brightness = spi_slave_transceive(ACK);
+    pixel_brightness = (received_pixel >> 5) * 255 / 7; // Value from 0 to 7
 
     // Get maximum dimming from potentiometer
     max_dimming = analogRead(BRIGHTNESS_POT);
@@ -167,12 +169,12 @@ void loop(void) {
 
     // While ARD_CTRL_MISO is LOW, wait
     while (!digitalRead(ARD_CTRL_MISO));
-
-    // Set rows to float
-    write_all_float();
     
     // Once surpassed, wait a defined period of time
     delay(WAIT_TIME_10MS);
+
+    // Set rows to float
+    write_all_float();
 
     // Send signal to slave using ARD_CTRL_MOSI
     digitalWrite(ARD_CTRL_MOSI, LOW);
