@@ -32,6 +32,7 @@
 
 volatile char received_pixels_first, received_pixels_second;
 //int max_dimming, scaled_max;
+volatile int potentiometer_val;
 
 unsigned char spi_slave_transceive(unsigned char data) {
     SPDR = data;
@@ -144,13 +145,18 @@ void setup(void) {
 
     // Make sure ARD_CTRL_MOSI is low to not trigger column control early
     digitalWrite(ARD_CTRL_MISO, LOW);
-    write_all_float(); 
+    write_all_float();
+
+    // Turn LED on
+    digitalWrite(LED_CTRL, HIGH);
 }
 
-// V1: Go pixel-by-pixel
+// V2: Go row-by-row
 void loop(void) {
     // TODO:    - If hinge pot indicates closed position, or button is off, send signal back to Nano
     //          - Else, send and make sure LED is on
+    //potentiometer_val = analogRead(HINGE_POT);
+
     // Get received byte from Jetson Nano e.g. 0000001 for row 1 dimming
     received_pixels_first = spi_slave_transceive(ACK);
     

@@ -100,9 +100,6 @@ void write_all_float() {
 }
 
 void setup(void) {
-    //Starts Serial Communication at Baud Rate 115200
-    //Serial.begin(115200);                    
-
     // Set row pins as outputs
     pinMode(ROW_1_HIGH, OUTPUT);  
     pinMode(ROW_1_LOW, OUTPUT);  
@@ -141,19 +138,20 @@ void setup(void) {
     write_all_float(); 
 }
 
-// V1: Go pixel-by-pixel
+// V2: Go row-by-row
 void loop(void) {
     // Get received byte from Jetson Nano e.g. 0000001 for row 1 dimming
     received_pixel = spi_slave_transceive(ACK);
     
     // Get pixel brightness -- 0 is off, 255 is max dimming
-    //pixel_brightness = spi_slave_transceive(ACK);
-    pixel_brightness = (received_pixel >> 5) * 255 / 7; // Value from 0 to 7
+    // Make it one of 8 discrete brightness vals
+    pixel_brightness = (received_pixel >> 5) * 255 / 7;
 
     // Get maximum dimming from potentiometer
     max_dimming = analogRead(BRIGHTNESS_POT);
-    scaled_max = (max_dimming * 255) / 1024;
 
+    // Cap brightness value by potentiometer
+    scaled_max = (max_dimming * 255) / 1024;
     if (pixel_brightness > scaled_max) {
         pixel_brightness = scaled_max;
     }
