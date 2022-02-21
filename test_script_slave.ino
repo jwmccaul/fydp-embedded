@@ -2,24 +2,24 @@
 
 #include <SPI.h>
 
-#define COLUMN_1_LOW    2
-#define COLUMN_2_LOW    3
-#define COLUMN_3_LOW    4
-#define COLUMN_4_LOW    5
-#define COLUMN_5_LOW    6
-#define COLUMN_6_LOW    11
-#define COLUMN_7_LOW    28
-#define COLUMN_8_LOW    27
-#define COLUMN_9_LOW    26
-#define COLUMN_10_LOW   25
-#define COLUMN_11_LOW   24
+#define COLUMN_1_LOW    0
+#define COLUMN_2_LOW    1
+#define COLUMN_3_LOW    2
+#define COLUMN_4_LOW    3
+#define COLUMN_5_LOW    4
+#define COLUMN_6_LOW    5
+#define COLUMN_7_LOW    A5
+#define COLUMN_8_LOW    A4
+#define COLUMN_9_LOW    A3
+#define COLUMN_10_LOW   A2
+#define COLUMN_11_LOW   A1
 
-#define ARD_CTRL_MOSI 14
-#define ARD_CTRL_MISO 15
+#define ARD_CTRL_MOSI 8
+#define ARD_CTRL_MISO 9
 
-#define HINGE_POT   23
-#define LED_CTRL    12
-#define BUTTON_SIG  13
+#define HINGE_POT   A0
+#define LED_CTRL    6
+#define BUTTON_SIG  7
 
 #define SPI_2_CLK   19
 #define SPI_2_MISO  18
@@ -47,37 +47,80 @@ void write_cols(volatile char recv_first, volatile char recv_second) {
     if (recv_first & 1) {
         digitalWrite(COLUMN_1_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_1_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 1)) {
         digitalWrite(COLUMN_2_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_2_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 2)) {
         digitalWrite(COLUMN_3_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_3_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 3)) {
         digitalWrite(COLUMN_4_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_4_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 4)) {
         digitalWrite(COLUMN_5_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_5_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 5)) {
         digitalWrite(COLUMN_6_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_6_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 6)) {
         digitalWrite(COLUMN_7_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_7_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 7)) {
         digitalWrite(COLUMN_8_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_8_LOW, LOW);
+    }
+    
 
     // Second byte gives second 8 columns
     if (recv_second & 1) {
         digitalWrite(COLUMN_9_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_9_LOW, LOW);
+    }
+    
     if (recv_second & (1 << 1)) {
         digitalWrite(COLUMN_10_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_10_LOW, LOW);
+    }
+    
     if (recv_second & (1 << 2)) {
         digitalWrite(COLUMN_11_LOW, HIGH);
+    }
+    else {
+        digitalWrite(COLUMN_11_LOW, LOW);
     }
 }
 
@@ -128,41 +171,31 @@ void setup(void) {
     pinMode(SPI_2_CS, INPUT);
 
     // Enable SPI
-    SPCR = (1 << SPE);
+    //SPCR = (1 << SPE);
 
     // Make sure ARD_CTRL_MOSI is low to not trigger column control early
     digitalWrite(ARD_CTRL_MISO, LOW);
     write_all_float();
-
-    // Turn LED on
-    digitalWrite(LED_CTRL, HIGH);
 }
+
+
 
 // V2: Go row-by-row
 void loop(void) {
-    // TODO:    - If hinge pot indicates closed position, or button is off, send signal back to Nano
-    //          - Else, send and make sure LED is on
-    //potentiometer_val = analogRead(HINGE_POT);
+      // While ARD_CTRL_MOSI is LOW, wait
+      while (!digitalRead(ARD_CTRL_MOSI));
+      
+      // 01010101=85, 00000101=5
+      write_cols(0b01010101, 0b00000101);
 
-    // Get received byte from Jetson Nano e.g. 0000001 for row 1 dimming
-    received_pixels_first = spi_slave_transceive(ACK);
-    
-    // Get pixel brightness -- 0 is off, 255 is max dimming
-    received_pixels_second = spi_slave_transceive(ACK);
+      digitalWrite(ARD_CTRL_MISO, HIGH);
 
-    // While ARD_CTRL_MOSI is LOW, wait
-    while (!digitalRead(ARD_CTRL_MOSI));
+      while (digitalRead(ARD_CTRL_MOSI));
 
-    // Write to rows
-    write_cols(received_pixels_first, received_pixels_second);
+      // 10101010=170, 00000010=2
+      write_cols(0b10101010, 0b00000010);
 
-    // Send signal to master using ARD_CTRL_MOSI
-    digitalWrite(ARD_CTRL_MISO, HIGH);
+      digitalWrite(ARD_CTRL_MISO, LOW);
 
-    // While ARD_CTRL_MOSI is high, wait
-    while (digitalRead(ARD_CTRL_MOSI));
-
-    // Set cols to float
-    write_all_float();
-    digitalWrite(ARD_CTRL_MOSI, LOW);
+      //write_all_float();
 }
