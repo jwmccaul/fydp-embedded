@@ -56,46 +56,46 @@ void write_analogs(char row_locn, char pix_brightness) {
 
 void write_rows(char recv) {
     if (recv & 1) {
-        digitalWrite(ROW_1_HIGH, HIGH);
+        digitalWrite(ROW_1_HIGH, LOW);
     } else {
         digitalWrite(ROW_1_LOW, HIGH);
     }
 
     if (recv & (1 << 1)) {
-        digitalWrite(ROW_2_HIGH, HIGH);
+        digitalWrite(ROW_2_HIGH, LOW);
     } else {
         digitalWrite(ROW_2_LOW, HIGH);
     }
 
     if (recv & (1 << 2)) {
-        digitalWrite(ROW_3_HIGH, HIGH);
+        digitalWrite(ROW_3_HIGH, LOW);
     } else {
         digitalWrite(ROW_3_LOW, HIGH);
     }
 
     if (recv & (1 << 3)) {
-        digitalWrite(ROW_4_HIGH, HIGH);
+        digitalWrite(ROW_4_HIGH, LOW);
     } else {
         digitalWrite(ROW_4_LOW, HIGH);
     }
 
     if (recv & (1 << 4)) {
-        digitalWrite(ROW_5_HIGH, HIGH);
+        digitalWrite(ROW_5_HIGH, LOW);
     } else {
         digitalWrite(ROW_5_LOW, HIGH);
     }
 }
 
 void write_all_float() {
-    digitalWrite(ROW_1_HIGH, LOW);
+    digitalWrite(ROW_1_HIGH, HIGH);
     digitalWrite(ROW_1_LOW, LOW);
-    digitalWrite(ROW_2_HIGH, LOW);
+    digitalWrite(ROW_2_HIGH, HIGH);
     digitalWrite(ROW_2_LOW, LOW);
-    digitalWrite(ROW_3_HIGH, LOW);
+    digitalWrite(ROW_3_HIGH, HIGH);
     digitalWrite(ROW_3_LOW, LOW);
-    digitalWrite(ROW_4_HIGH, LOW);
+    digitalWrite(ROW_4_HIGH, HIGH);
     digitalWrite(ROW_4_LOW, LOW);
-    digitalWrite(ROW_5_HIGH, LOW);
+    digitalWrite(ROW_5_HIGH, HIGH);
     digitalWrite(ROW_5_LOW, LOW);
 }
 

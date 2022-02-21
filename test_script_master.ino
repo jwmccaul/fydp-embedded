@@ -27,6 +27,10 @@
 #define SPI_1_MOSI      17
 #define SPI_1_CS        16
 
+#define ACK1            0xEE
+
+volatile char received_pixel;
+
 void write_all_float() {
     digitalWrite(ROW_1_HIGH, HIGH);
     digitalWrite(ROW_1_LOW, LOW);
@@ -135,16 +139,17 @@ void loop(void) {
 
       delay(312);
 */
+    received_pixel = spi_slave_transceive(ACK1);
 
-  digitalWrite(ARD_CTRL_MOSI, HIGH);
+    digitalWrite(ARD_CTRL_MOSI, HIGH);
 
-  while (!digitalRead(ARD_CTRL_MISO));
+    while (!digitalRead(ARD_CTRL_MISO));
 
-  delay(624);
+    delay(624);
 
-  digitalWrite(ARD_CTRL_MOSI, LOW);
+    digitalWrite(ARD_CTRL_MOSI, LOW);
 
-  while (digitalRead(ARD_CTRL_MISO));
+    while (digitalRead(ARD_CTRL_MISO));
 
-  delay(624);
+    delay(624);
 }

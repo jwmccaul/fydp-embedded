@@ -26,13 +26,14 @@
 #define SPI_2_MOSI  17
 #define SPI_2_CS    16
 
-#define ACK             0xFF
+#define ACK1            0xFE
+#define ACK2            0xFF
 
 #define WAIT_TIME_10MS  10
 
 volatile char received_pixels_first, received_pixels_second;
 //int max_dimming, scaled_max;
-volatile int potentiometer_val;
+//volatile int potentiometer_val;
 
 unsigned char spi_slave_transceive(unsigned char data) {
     SPDR = data;
@@ -124,7 +125,7 @@ void write_cols(volatile char recv_first, volatile char recv_second) {
     }
 }
 
-void write_all_float() {
+void write_all_low() {
     digitalWrite(COLUMN_1_LOW, LOW);
     digitalWrite(COLUMN_2_LOW, LOW);
     digitalWrite(COLUMN_3_LOW, LOW);
@@ -171,31 +172,37 @@ void setup(void) {
     pinMode(SPI_2_CS, INPUT);
 
     // Enable SPI
-    //SPCR = (1 << SPE);
+    SPCR = (1 << SPE);
 
     // Make sure ARD_CTRL_MOSI is low to not trigger column control early
     digitalWrite(ARD_CTRL_MISO, LOW);
-    write_all_float();
+    write_all_low();
 }
 
 
 
 // V2: Go row-by-row
 void loop(void) {
-      // While ARD_CTRL_MOSI is LOW, wait
-      while (!digitalRead(ARD_CTRL_MOSI));
-      
-      // 01010101=85, 00000101=5
-      write_cols(0b01010101, 0b00000101);
+    received_pixels_first = spi_slave_transceive(ACK1);
 
-      digitalWrite(ARD_CTRL_MISO, HIGH);
+    received_pixels_second = spi_slave_transceive(ACK2);
+    
+    // While ARD_CTRL_MOSI is LOW, wait
+    while (!digitalRead(ARD_CTRL_MOSI));
+    
+    // 01010101=85, 00000101=5
+    //write_cols(0b01010101, 0b00000101);
+    write_cols(received_pixels_first, received_pixels_second);
 
-      while (digitalRead(ARD_CTRL_MOSI));
+    digitalWrite(ARD_CTRL_MISO, HIGH);
 
-      // 10101010=170, 00000010=2
-      write_cols(0b10101010, 0b00000010);
+    while (digitalRead(ARD_CTRL_MOSI));
 
-      digitalWrite(ARD_CTRL_MISO, LOW);
+    // 10101010=170, 00000010=2
+    //write_cols(0b10101010, 0b00000010);
+    write_cols(received_pixels_first, received_pixels_second);
 
-      //write_all_float();
+    digitalWrite(ARD_CTRL_MISO, LOW);
+
+    //write_all_float();
 }

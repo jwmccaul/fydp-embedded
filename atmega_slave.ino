@@ -32,7 +32,7 @@
 
 volatile char received_pixels_first, received_pixels_second;
 //int max_dimming, scaled_max;
-volatile int potentiometer_val;
+//volatile int potentiometer_val;
 
 unsigned char spi_slave_transceive(unsigned char data) {
     SPDR = data;
@@ -47,37 +47,80 @@ void write_cols(volatile char recv_first, volatile char recv_second) {
     if (recv_first & 1) {
         digitalWrite(COLUMN_1_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_1_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 1)) {
         digitalWrite(COLUMN_2_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_2_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 2)) {
         digitalWrite(COLUMN_3_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_3_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 3)) {
         digitalWrite(COLUMN_4_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_4_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 4)) {
         digitalWrite(COLUMN_5_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_5_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 5)) {
         digitalWrite(COLUMN_6_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_6_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 6)) {
         digitalWrite(COLUMN_7_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_7_LOW, LOW);
+    }
+    
     if (recv_first & (1 << 7)) {
         digitalWrite(COLUMN_8_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_8_LOW, LOW);
+    }
+    
 
     // Second byte gives second 8 columns
     if (recv_second & 1) {
         digitalWrite(COLUMN_9_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_9_LOW, LOW);
+    }
+    
     if (recv_second & (1 << 1)) {
         digitalWrite(COLUMN_10_LOW, HIGH);
     } 
+    else {
+        digitalWrite(COLUMN_10_LOW, LOW);
+    }
+    
     if (recv_second & (1 << 2)) {
         digitalWrite(COLUMN_11_LOW, HIGH);
+    }
+    else {
+        digitalWrite(COLUMN_11_LOW, LOW);
     }
 }
 
@@ -96,9 +139,6 @@ void write_all_float() {
 }
 
 void setup(void) {
-    //Starts Serial Communication at Baud Rate 115200
-    //Serial.begin(115200);                    
-
     // Set column pins as outputs
     pinMode(COLUMN_1_LOW, OUTPUT);  
     pinMode(COLUMN_2_LOW, OUTPUT);  
