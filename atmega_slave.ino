@@ -2,24 +2,24 @@
 
 #include <SPI.h>
 
-#define COLUMN_1_LOW    2
-#define COLUMN_2_LOW    3
-#define COLUMN_3_LOW    4
-#define COLUMN_4_LOW    5
-#define COLUMN_5_LOW    6
-#define COLUMN_6_LOW    11
-#define COLUMN_7_LOW    28
-#define COLUMN_8_LOW    27
-#define COLUMN_9_LOW    26
-#define COLUMN_10_LOW   25
-#define COLUMN_11_LOW   24
+#define COLUMN_1_LOW    0
+#define COLUMN_2_LOW    1
+#define COLUMN_3_LOW    2
+#define COLUMN_4_LOW    3
+#define COLUMN_5_LOW    4
+#define COLUMN_6_LOW    5
+#define COLUMN_7_LOW    A5
+#define COLUMN_8_LOW    A4
+#define COLUMN_9_LOW    A3
+#define COLUMN_10_LOW   A2
+#define COLUMN_11_LOW   A1
 
-#define ARD_CTRL_MOSI 14
-#define ARD_CTRL_MISO 15
+#define ARD_CTRL_MOSI 8
+#define ARD_CTRL_MISO 9
 
-#define HINGE_POT   23
-#define LED_CTRL    12
-#define BUTTON_SIG  13
+#define HINGE_POT   A0
+#define LED_CTRL    6
+#define BUTTON_SIG  7
 
 #define SPI_2_CLK   19
 #define SPI_2_MISO  18

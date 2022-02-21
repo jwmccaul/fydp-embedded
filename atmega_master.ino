@@ -2,25 +2,25 @@
 
 #include <SPI.h>      
 
-#define ROW_1_LOW       13
-#define ROW_1_HIGH      14
-#define ROW_2_LOW       4
-#define ROW_2_HIGH      6
-#define ROW_3_LOW       2
-#define ROW_3_HIGH      3
-#define ROW_4_LOW       27
-#define ROW_4_HIGH      28
-#define ROW_5_LOW       25
-#define ROW_5_HIGH      26
+#define ROW_1_LOW       7
+#define ROW_1_HIGH      8
+#define ROW_2_LOW       2
+#define ROW_2_HIGH      4
+#define ROW_3_LOW       0
+#define ROW_3_HIGH      1
+#define ROW_4_LOW       A4
+#define ROW_4_HIGH      A5
+#define ROW_5_LOW       A2
+#define ROW_5_HIGH      A3
 
-#define ARD_CTRL_MOSI   15
-#define ARD_CTRL_MISO   24
+#define ARD_CTRL_MOSI   9
+#define ARD_CTRL_MISO   A1
 
-#define BRIGHTNESS_POT  23
+#define BRIGHTNESS_POT  A0
 
-#define ALOG_12         12  // OC0A
-#define ALOG_3          11  // OC0B
-#define ALOG_45         5   // OC2B
+#define ALOG_12         6  // OC0A
+#define ALOG_3          5  // OC0B
+#define ALOG_45         3   // OC2B
 
 #define SPI_1_CLK       19
 #define SPI_1_MISO      18
