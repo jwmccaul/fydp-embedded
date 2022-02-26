@@ -35,7 +35,7 @@ volatile char received_pixel;
 int pixel_brightness;
 int max_dimming, scaled_max;
 
-unsigned char spi_slave_transceive(unsigned char data) {
+unsigned char spi_transceive(unsigned char data) {
     SPDR = data;
   
     while (!(SPSR & 1 << SPIF));
@@ -124,14 +124,14 @@ void setup(void) {
     pinMode(ALOG_3, OUTPUT);  
     pinMode(ALOG_45, OUTPUT);
 
+    // Enable SPI
+    SPCR = (1 << SPE);
+
     // Set SPI comms with Jetson Nano
     pinMode(SPI_1_CLK, INPUT);  
     pinMode(SPI_1_MISO, OUTPUT);  
     pinMode(SPI_1_MOSI, INPUT);
     pinMode(SPI_1_CS, INPUT);
-
-    // Enable SPI
-    SPCR = (1 << SPE);
 
     // Make sure ARD_CTRL_MOSI is low to not trigger column control early
     digitalWrite(ARD_CTRL_MOSI, LOW);   
@@ -141,7 +141,7 @@ void setup(void) {
 // V2: Go row-by-row
 void loop(void) {
     // Get received byte from Jetson Nano e.g. 0000001 for row 1 dimming
-    received_pixel = spi_slave_transceive(ACK);
+    received_pixel = spi_transceive(ACK);
     
     // Get pixel brightness -- 0 is off, 255 is max dimming
     // Make it one of 8 discrete brightness vals
