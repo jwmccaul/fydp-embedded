@@ -7,23 +7,36 @@ NUM_ROWS = 5
 NUM_COLS = 11
 
 def getIntervals(frame_width, frame_height):
-    rowIntervals = np.linspace(0, frame_height, NUM_ROWS)
-    colIntervals = np.linspace(0, frame_width, NUM_COLS)
+    rowIntervals = np.round(np.linspace(0, frame_height, NUM_ROWS+1)).astype(int)
+    colIntervals = np.round(np.linspace(0, frame_width, NUM_COLS+1)).astype(int)
 
     return rowIntervals, colIntervals
 
 
 
-def getRowAndCol(maxLoc, radius, rowIntervals, colIntervals):
-    x = maxLoc[0]
-    y = maxLoc[1]
+def getRowAndCol(maxLoc, radius, rowIntervals, colIntervals, frame_width, frame_height, image):
+    zero_mask = np.zeros((frame_height,frame_width))
+    cv2.circle(zero_mask, maxLoc, radius, (255, 0, 0), -1)
+
+    cv2.imwrite("test.png",zero_mask)
+
+
+    coords_in_circle = np.transpose(np.nonzero(zero_mask))
+
+    for coord in coords_in_circle:
+        print(coord)
+
+
+
+
+
     
 
 
 
 
 
-def detectAndDisplay(frame):
+def detectAndDisplay(frame, frame_width, frame_height, rowIntervals, colIntervals):
     maxLocAboveThresh = -1
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -35,14 +48,23 @@ def detectAndDisplay(frame):
     # (mean, stddev) = cv2.meanStdDev(gray)
     image = frame.copy()
 
-    if(maxVal >= args["threshhold"]):
-        cv2.circle(image, maxLoc, args["radius"], (255, 0, 0), 2)
-        maxLocAboveThresh = maxLoc
+    for i in rowIntervals:
+        cv2.line(image, (0,i), (frame_width, i), (255,0,0), 2)
+    
+    for j in colIntervals:
+        cv2.line(image, (j,0), (j, frame_height), (255,0,0), 2)
 
-    print("MAX VAL", maxVal)
+
+
+    if(maxVal >= args["threshhold"]):
+        maxLocAboveThresh = maxLoc
+        cv2.circle(image, maxLoc, args["radius"], (0, 0, 255), 2)
+
+
+    # print("MAX VAL", maxVal)
     # display the results of our newly improved method
     cv2.imshow("Robust", image)
-    return maxLocAboveThresh
+    return maxLocAboveThresh, image
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -54,18 +76,18 @@ args = vars(ap.parse_args())
 
 camera_device = args["camera"]
 #-- 2. Read the video stream
-cap = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L2)
-cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+cap = cv2.VideoCapture(camera_device)
+# cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
+# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
 
 if not cap.isOpened:
     print('--(!)Error opening video capture')
     exit(0)
 
-frame_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-frame_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 rowIntervals, colIntervals = getIntervals(frame_width, frame_height)
 print(rowIntervals, colIntervals)
@@ -79,10 +101,11 @@ while True:
         print('--(!) No captured frame -- Break!')
         break
 
-    maxLoc = detectAndDisplay(frame)
+    maxLoc, image = detectAndDisplay(frame, frame_width, frame_height, rowIntervals, colIntervals)
 
     if(maxLoc != -1):
-        getRowAndCol(maxLoc, args["radius"], rowIntervals, colIntervals)
+        getRowAndCol(maxLoc, args["radius"], rowIntervals, 
+        colIntervals, frame_width, frame_height, image)
 
 
     if cv2.waitKey(10) == 27:
