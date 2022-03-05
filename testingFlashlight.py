@@ -1,8 +1,16 @@
 import cv2
+from cv2 import contourArea
 import numpy as np
+from writeRows import sendRowData
+from writeRowsClass import writeRows
 
 NUM_ROWS = 5
 NUM_COLS = 11
+
+def convertRowsToByte(rows_to_be_on):
+    int_rep = int(''.join([str(elem) for elem in rows_to_be_on]), 2)
+    print(int_rep)
+    return int_rep
 
 def getIntervals(frame_width, frame_height):
     rowIntervals = np.round(np.linspace(0, frame_height, NUM_ROWS+1)).astype(int)
@@ -27,9 +35,9 @@ def getRowAndCol(maxLoc, radius, rowIntervals, colIntervals, frame_width, frame_
         for i in range(len(rowIntervals) - 1):
             if(coord[0] > rowIntervals[i] and coord[0] <= rowIntervals[i+1]):
                rows_to_be_on[i] = 1
-        for j in range(len(colIntervals) - 1):
-            if(coord[1] > colIntervals[j] and coord[1] <= colIntervals[j+1]):
-                cols_to_be_on[j] = 1
+        # for j in range(len(colIntervals) - 1):
+        #     if(coord[1] > colIntervals[j] and coord[1] <= colIntervals[j+1]):
+        #         cols_to_be_on[j] = 1
 
     return rows_to_be_on, cols_to_be_on
 #begin streaming
@@ -54,30 +62,32 @@ def detectLight(frame, ):
     lightcontours, hierarchy = cv2.findContours(edged, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     #attempts finding the circle created by the torch illumination on the wall
-    circles = cv2.HoughCircles(threshold, cv2.HOUGH_GRADIENT, 1.0, 20,
+    circles = cv2.HoughCircles(threshold, cv2.HOUGH_GRADIENT, 1.5, 5,
                             param1=10,
                             param2= 15,
                             minRadius=10,
-                            maxRadius=100,)
+                            maxRadius=50)
      #check if the list of contours is greater than 0 and if any circles are detected
     # if(len(lightcontours) > 0):
     #     print("LIGHT CONTOURS", len(lightcontours))
     # if(circles is not None):
     #     print("CIRCLES", circles)
-    if len(lightcontours)>0: ## and circles is not None:
+    if len(lightcontours)>0 and circles is not None:
         #Find the Maxmimum Contour, this is assumed to be the light beam
         maxcontour = max(lightcontours, key=cv2.contourArea)
-
+        print("MAX CONTOUR", cv2.contourArea(maxcontour))
         #avoids random spots of brightness by making sure the contour is reasonably sized
-        if cv2.contourArea(maxcontour) > 1000:
+        if cv2.contourArea(maxcontour) > 1250:
             (x, final_y), radius = cv2.minEnclosingCircle(maxcontour)
+            print("RADIUS", radius)
             cv2.circle(frame, (int(x), int(final_y)), int(radius), (0, 255, 0), 4)
             return frame, thr, (int(x), int(final_y)), int(radius)
             # cv2.rectangle(frame, (int(x) - 5, int(final_y) - 5), (int(x) + 5, int(final_y) + 5), (0, 128, 255), -1)
     return frame, thr, -1, -1
     
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('/dev/video2')
+writeRowsClass = writeRows()
 
 if not cap.isOpened():
     print('--(!)Error opening video capture')
@@ -105,9 +115,10 @@ while True:
     if(maxLoc != -1):
         rows_to_be_on, cols_to_be_on = getRowAndCol(maxLoc, radius, rowIntervals, 
         colIntervals, frame_width, frame_height)
+        writeRowsClass.sendRowData([convertRowsToByte(rows_to_be_on)])
 
         print("ROWS TO BE ON", rows_to_be_on)
-        print("COLS TO BE ON", cols_to_be_on)
+        # print("COLS TO BE ON", cols_to_be_on)
 
     cv2.imshow('light', thr)
     cv2.imshow('frame', frame)

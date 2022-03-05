@@ -58,7 +58,6 @@ camera_device = args["camera"]
 
 video_getter = VideoGet("/dev/video0").start()
 video_shower = VideoShow(video_getter.frame).start()
-# video_shower = VideoShow(video_getter.frame).start()
 rowAndColCalculator = RowAndColThread()
 
 
@@ -83,10 +82,10 @@ while True:
         break
     
     frame = video_getter.frame
-    video_shower.frame = frame
        
     maxLoc, image = detectAndDisplay(frame, frame_width, frame_height, rowIntervals, colIntervals)
 
+    video_shower.frame = image
 
     if(maxLoc != -1):
         rowAndColCalculator.start(maxLoc, args["radius"], rowIntervals, 

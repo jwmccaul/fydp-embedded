@@ -4,7 +4,7 @@ import time
 
 SB = 180
 EB = 181
-NUM_ROWS = 5
+NUM_ROWS = 1
 ACK = [119]
 
 spi = spidev.SpiDev()
@@ -38,11 +38,12 @@ def sendRowData(data):
         response = spi.xfer2([i])
         print(response)
         if(response != ACK):
-            return 0
+            # return 0
+            print("NO ack")
     return 1
 
 try:
-    data = [254, 255, 188, 173, 256.5, 5, 6, 6]
+    data = [254, 255, 188, 173,100]
     wasSuccessful = sendRowData(data)
 
     if(wasSuccessful):
