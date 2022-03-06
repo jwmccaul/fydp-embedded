@@ -67,13 +67,14 @@ if not eyes_cascade.load(cv.samples.findFile(eyes_cascade_name)):
 
 camera_device = args.camera
 #-- 2. Read the video stream
-cap = nano.Camera(flip=0)
+# cap = nano.Camera(flip=0)
+cap = cv.VideoCapture('/dev/video3')
 # if not cap.isOpened:
 #     print('--(!)Error opening video capture')
 #     exit(0)
 
 while True:
-    frame = cap.read()
+    _, frame = cap.read()
     if frame is None:
         print('--(!) No captured frame -- Break!')
         break

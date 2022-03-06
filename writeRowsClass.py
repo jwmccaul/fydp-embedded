@@ -48,10 +48,10 @@ class writeRows:
 
         for i in data:
             response = self.spi.xfer2([i])
-            print(response)
             if(response != self.ACK):
-                # return 0
-                print("NO ack")
+                print("ACK MISSING")
+            else:
+                print("ACK RECEIVED: " + str(response[0]))
         return 1
 
 testing = writeRows()

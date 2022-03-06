@@ -101,6 +101,9 @@ def detectLight(frame, ):
     #threshold the blurred frame accordingly
     hi, threshold = cv2.threshold(blur, maxVal-1, 255, cv2.THRESH_BINARY)
     thr = threshold.copy()
+
+    drawIntervals(frame, rowIntervals, colIntervals, 
+                frame_width, frame_height, (255,0,0))
  
     #resize frame for ease
     cv2.resize(thr, (300,300))
@@ -161,11 +164,10 @@ cv2.imshow("mockFrame", mockFrame)
 while True:
     _, frame = cap.read()
  
-    drawIntervals(frame, rowIntervals, colIntervals, 
-                frame_width, frame_height, (255,0,0))
+    
 
     frame, thr, maxLoc, radius = detectLight(frame)
-    print("Not seen count", NOT_SEEN_COUNT)
+    print("NOT SEEN COUNT", NOT_SEEN_COUNT)
     if(maxLoc != -1):
         NOT_SEEN_COUNT = 0
         rows_to_be_on, cols_to_be_on = getRowAndCol(maxLoc, radius, rowIntervals, 
