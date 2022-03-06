@@ -23,15 +23,28 @@ def drawIntervals(frame, rowIntervals, colIntervals,
 
 def updateMockDisplay(frame, rows_to_be_on, rowIntervals, colIntervals, 
                         frame_width, frame_height):
-    print("RTBO", rows_to_be_on, "INTS", rowIntervals)
 
     for i in range(len(rows_to_be_on)):
         if(rows_to_be_on[i] == 1):
-            cv2.rectangle(frame, (0, rowIntervals[i]), 
-            (frame_width, rowIntervals[i+1]), 0, -1)
+            if(i == 0):
+                cv2.rectangle(frame, (0, rowIntervals[0]), 
+                (frame_width, rowIntervals[2]), 0, -1)
+            if(i == 1):
+                cv2.rectangle(frame, (0, rowIntervals[2]), 
+                (frame_width, rowIntervals[3]), 0, -1)
+            if(i == 2):
+                cv2.rectangle(frame, (0, rowIntervals[3]), 
+                (frame_width, rowIntervals[5]), 0, -1)
         else:
-            cv2.rectangle(frame, (0, rowIntervals[i]), 
-            (frame_width, rowIntervals[i+1]), 255, -1)
+            if(i == 0):
+                cv2.rectangle(frame, (0, rowIntervals[0]), 
+                (frame_width, rowIntervals[2]), 255, -1)
+            if(i == 1):
+                cv2.rectangle(frame, (0, rowIntervals[2]), 
+                (frame_width, rowIntervals[3]), 255, -1)
+            if(i == 2):
+                cv2.rectangle(frame, (0, rowIntervals[3]), 
+                (frame_width, rowIntervals[5]), 255, -1)
     
     drawIntervals(mockFrame, rowIntervals, colIntervals, 
                     frame_width, frame_height, 0)
@@ -47,9 +60,9 @@ def convertRowsToByte(rows_to_be_on):
     print(int_rep)
     return int_rep
 
-def getIntervals(frame_width, frame_height):
-    rowIntervals = np.round(np.linspace(0, frame_height, NUM_ROWS+1)).astype(int)
-    colIntervals = np.round(np.linspace(0, frame_width, NUM_COLS+1)).astype(int)
+def getIntervals(frame_width, frame_height, num_rows, num_cols):
+    rowIntervals = np.round(np.linspace(0, frame_height, num_rows+1)).astype(int)
+    colIntervals = np.round(np.linspace(0, frame_width, num_cols+1)).astype(int)
 
     return rowIntervals, colIntervals
 
@@ -133,11 +146,14 @@ frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 
 
-rowIntervals, colIntervals = getIntervals(frame_width, frame_height)
+rowIntervals, colIntervals = getIntervals(frame_width, frame_height, NUM_ROWS, 
+                                            NUM_COLS)
+rowIntervalsMock, colIntervalsMock = getIntervals(frame_width, frame_height, NUM_ROWS_MOCK,
+                                                        NUM_COLS)
 
 mockFrame = np.ones((frame_height,frame_width))*255
 
-drawIntervals(mockFrame, rowIntervals, colIntervals, 
+drawIntervals(mockFrame, rowIntervalsMock, colIntervalsMock, 
                 frame_width, frame_height, 0)
 cv2.imshow("mockFrame", mockFrame)
 
@@ -156,7 +172,7 @@ while True:
         colIntervals, frame_width, frame_height)
 
         writeRowsClass.sendRowData([convertRowsToByte(rows_to_be_on)])
-        updateMockDisplay(mockFrame, rows_to_be_on, rowIntervals, colIntervals,  
+        updateMockDisplay(mockFrame, rows_to_be_on, rowIntervalsMock, colIntervalsMock,  
                             frame_width, frame_height)
 
         # print("COLS TO BE ON", cols_to_be_on)
@@ -164,7 +180,7 @@ while True:
         NOT_SEEN_COUNT += 1
         if (NOT_SEEN_COUNT >= MAX_NOT_SEEN):
             writeRowsClass.sendRowData([0])
-            updateMockDisplay(mockFrame, [0,0,0], rowIntervals, colIntervals,
+            updateMockDisplay(mockFrame, [0,0,0], rowIntervalsMock, colIntervalsMock,
                                 frame_width, frame_height)
     
 
