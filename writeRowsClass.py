@@ -55,5 +55,5 @@ class writeRows:
         return 1
 
 testing = writeRows()
-testing.sendRowData([100,200,150,140,120])
+testing.sendRowData([0b000])
 

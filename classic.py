@@ -79,10 +79,10 @@ args = vars(ap.parse_args())
 
 camera_device = args["camera"]
 
-cap = cv2.VideoCapture('/dev/video2')
-cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+cap = cv2.VideoCapture("nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080,format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink")
+# cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
+# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
 
 
